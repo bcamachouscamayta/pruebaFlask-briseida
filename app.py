@@ -1,23 +1,40 @@
 from flask import Flask
 from flask import Flask, url_for
+import sqlite3
 
 app = Flask(__name__)
 
-@app.route("/")
-def main():
-    url_ekisde = url_for("ekisde")
-    url_ekisde = url_for("ekisde")
-    url_ekisde = url_for("ekisde")
+db = None
 
-return f"""
-<a href="{url_ekisde}>lol</a>
-<br>
-<a href="{url_ekisde}>lol</a>
-<br>
-<a href="{url_ekisde}>lol</a>
+def dict_factory(cursor, row):
+   """Arma un diccionario con los valores de la fila."""
+   fields = [column[0] for column in cursor.description]
+   return {key: value for key, value in zip(fields, row)}
 
-"""
+def abrirConexion():
+    global db
+    db = sqlite3.connect("instance/datos.sqlite")
+    db.row_factory = dict_factory
 
+def cerrarConexion():
+    global db
+    db.close()
+    db = None
+
+@app.route("/test-db")
+def testDB():
+    abrirConexion()
+    cursor = db.cursor()
+    cursor.execute("SELECT COUNT(*)FROM usuarios; ")
+    res = cursor.fetchone()
+    registros = res["cant"]
+    cerrarConexion()
+    return f"hay {registros}registros en la tabla de usuarios"
+
+
+
+
+app = Flask(__name__)
 
 
 @app.route('/hola/chau')
