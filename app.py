@@ -1,6 +1,7 @@
 from flask import Flask
 from flask import Flask, url_for
 import sqlite3
+from flask import Flask, render_template
 
 app = Flask(__name__)
 
@@ -17,6 +18,7 @@ def abrirConexion():
     db.row_factory = dict_factory
 
 def cerrarConexion():
+
     global db
     db.close()
     db = None
@@ -31,11 +33,7 @@ def testDB():
     cerrarConexion()
     return f"hay {registros}registros en la tabla de usuarios"
 
-
-
-
 app = Flask(__name__)
-
 
 @app.route('/hola/chau')
 def hola():
@@ -51,3 +49,16 @@ def salir():
 @app.route("/saludar/por-nombre/<string:nombre>")
 def sxm(nombre):
     return f"<p>hola {nombre}</p>"
+
+@app.route("/mostrar-datos-plantilla/<int:id>")
+def datos_plantilla(id):
+    abrirConexion()
+    cursor.execute("SELEC id,usuario, email FROM usuarios WHERE id = ?;", (id,))
+    res = cursor.fetchone()
+    cerrarConexion()
+    usuario = None
+    email = None
+    if res != None:
+        usuario=res['usuario']
+        email=res['usuario']
+    return render_template("datos2.html", id=id, usuario=usuario, email=email)
