@@ -53,6 +53,7 @@ def sxm(nombre):
 @app.route("/mostrar-datos-plantilla/<int:id>")
 def datos_plantilla(id):
     abrirConexion()
+    cursor = db.cursor()
     cursor.execute("SELEC id,usuario, email FROM usuarios WHERE id = ?;", (id,))
     res = cursor.fetchone()
     cerrarConexion()
